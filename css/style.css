@@ -59,7 +59,7 @@ button {
 }
 
 /* ---------- 屏幕切换 ---------- */
-.screen { display: none; min-height: 100dvh; position: relative; }
+.screen { display: none; min-height: 100dvh; position: relative; padding-bottom: 42px; }
 .screen.is-active { display: block; }
 
 /* 切换进入动画：模糊淡入 */
@@ -514,4 +514,33 @@ button {
   .hud-stat .score-value { font-size: 20px; }
   .options-2 .option-btn { font-size: 19px; padding: 24px 14px; }
   .home-top { flex-direction: column; gap: 10px; }
+}
+
+/* ---------- 全站署名栏 ---------- */
+.brand-credit {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 7px 12px 8px;
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  color: var(--paper-dim);
+  background: color-mix(in srgb, var(--charcoal) 82%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--paper) 12%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.credit-sep { color: color-mix(in srgb, var(--paper-dim) 45%, transparent); }
+.credit-brand { color: var(--paper); font-weight: 600; }
+.credit-link { color: var(--gold); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--gold) 55%, transparent); }
+.credit-link:hover { color: var(--paper); border-bottom-color: var(--paper); }
+.credit-wx { display: inline-flex; align-items: center; gap: 5px; }
+.credit-wx-icon { width: 16px; height: 16px; color: var(--leaf); flex: none; }
+@media (max-width: 480px) {
+  .brand-credit { font-size: 11.5px; gap: 6px; padding: 6px 8px; }
 }
