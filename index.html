@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>小树苗医生大冒险 · 循证儿科亲子闯关</title>
+<meta name="description" content="基于循证儿科医学知识的亲子闯关游戏，十五大主题关卡：喂养、睡眠、发热、咳嗽、成长、安全、皮肤、新生儿、情绪、就医、吐泻、流感、用药、急救等，家长学判断，宝宝养习惯。" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 纸张颗粒纹理 -->
+  <svg class="grain-defs" width="0" height="0" aria-hidden="true">
+    <filter id="paper-grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+  </svg>
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- ============ 首页 ============ -->
+    <section class="screen screen-home is-active" id="screen-home">
+      <div class="hero-parallax" aria-hidden="true">
+        <svg class="hero-hills" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path class="hill hill-back" d="M0,220 C240,160 420,260 720,210 C980,168 1180,250 1440,200 L1440,320 L0,320 Z" />
+          <path class="hill hill-front" d="M0,270 C260,230 480,300 760,265 C1020,232 1220,300 1440,258 L1440,320 L0,320 Z" />
+        </svg>
+      </div>
+
+      <header class="home-top">
+        <div class="brand-mark">
+          <svg viewBox="0 0 48 48" class="brand-sapling" aria-hidden="true">
+            <path d="M24 44 L24 22" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M24 30 C16 28 12 20 12 14 C20 14 26 20 24 30 Z" fill="currentColor" opacity=".85"/>
+            <path d="M24 24 C32 22 36 14 36 8 C28 8 22 14 24 24 Z" fill="currentColor"/>
+          </svg>
+          <span>小树苗医生大冒险</span>
+        </div>
+        <a class="site-link" href="https://www.yanyisheng.vip" target="_blank" rel="noopener">知识来源 · yanyisheng.vip</a>
+      </header>
+
+      <div class="hero">
+        <p class="hero-kicker">循证儿科 · 亲子共学 · 十五关冒险</p>
+        <h1 class="hero-title">
+          <span class="outline-word">变成小医生</span>
+          <span class="solid-word">守护<span class="accent">小树苗</span></span>
+        </h1>
+        <p class="hero-sub">每一关的医学知识，都来自循证儿科临床实践。<br />家长学判断，宝宝养习惯，一起闯关一起长大。</p>
+
+        <div class="mode-select">
+          <button class="push-btn push-btn--big" data-mode="parent">
+            <span class="push-btn-label">家长闯关</span>
+            <span class="push-btn-hint">情境选择题 · 考判断力</span>
+          </button>
+          <button class="push-btn push-btn--big push-btn--gold" data-mode="kid">
+            <span class="push-btn-label">宝宝闯关</span>
+            <span class="push-btn-hint">简单判断题 · 3 岁以上</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="torn-edge torn-edge--bottom" aria-hidden="true">
+        <svg viewBox="0 0 1440 44" preserveAspectRatio="none"><path d="M0,44 L0,22 L38,30 L72,14 L120,26 L166,10 L214,28 L262,16 L310,30 L358,12 L410,26 L462,14 L512,30 L560,16 L612,26 L660,10 L712,28 L760,16 L812,30 L862,14 L914,26 L964,12 L1014,28 L1064,18 L1116,30 L1166,14 L1218,26 L1268,12 L1320,28 L1372,16 L1440,24 L1440,44 Z"/></svg>
+      </div>
+    </section>
+
+    <!-- ============ 关卡地图 ============ -->
+    <section class="screen screen-map" id="screen-map">
+      <header class="map-header">
+        <button class="pill-btn" id="btn-back-home">← 首页</button>
+        <div class="map-title-wrap">
+          <h2 class="map-title outline-word" id="map-mode-title">闯关地图</h2>
+        </div>
+        <div class="score-board">
+          <div class="score-item"><span class="score-label">总星星</span><span class="score-value" id="board-stars">0</span></div>
+          <div class="score-item"><span class="score-label">总分</span><span class="score-value" id="board-score">0</span></div>
+        </div>
+      </header>
+
+      <div class="map-scroll">
+        <div class="map-path" id="map-path">
+          <svg class="map-path-svg" id="map-path-svg" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <!-- 关卡节点由 JS 生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 答题 ============ -->
+    <section class="screen screen-quiz" id="screen-quiz">
+      <header class="quiz-header">
+        <button class="pill-btn" id="btn-quit-level">← 地图</button>
+        <div class="quiz-world-tag" id="quiz-world-tag">第 1 关</div>
+        <div class="quiz-hud">
+          <div class="hud-hearts" id="hud-hearts" aria-label="生命值"></div>
+          <div class="hud-stat"><span class="score-label">得分</span><span class="score-value" id="hud-score">0</span></div>
+          <div class="hud-stat"><span class="score-label">连击</span><span class="score-value" id="hud-streak">0</span></div>
+        </div>
+      </header>
+
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar"></div></div>
+
+      <main class="quiz-main">
+        <div class="question-card" id="question-card">
+          <p class="question-scene" id="question-scene"></p>
+          <h3 class="question-text" id="question-text"></h3>
+          <div class="options-grid" id="options-grid"></div>
+        </div>
+      </main>
+
+      <!-- 答对 / 答错 反馈 -->
+      <div class="feedback-overlay" id="feedback-overlay" aria-hidden="true">
+        <div class="feedback-card" id="feedback-card">
+          <div class="feedback-verdict" id="feedback-verdict">答对啦！</div>
+          <p class="feedback-explain" id="feedback-explain"></p>
+          <p class="feedback-doctor" id="feedback-doctor"></p>
+          <button class="push-btn" id="btn-feedback-next"><span class="push-btn-label">继续</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 关卡结算 ============ -->
+    <section class="screen screen-result" id="screen-result">
+      <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
+      <div class="result-card" id="result-card">
+        <div class="result-stars" id="result-stars"></div>
+        <h2 class="result-title" id="result-title">关卡完成！</h2>
+        <p class="result-summary" id="result-summary"></p>
+        <p class="result-tip" id="result-tip"></p>
+        <div class="result-actions">
+          <button class="push-btn" id="btn-replay"><span class="push-btn-label">再玩一次</span></button>
+          <button class="push-btn push-btn--gold" id="btn-next-level"><span class="push-btn-label">下一关</span></button>
+          <button class="pill-btn" id="btn-result-map">回到地图</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
