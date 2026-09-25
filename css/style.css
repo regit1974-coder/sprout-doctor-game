@@ -544,3 +544,313 @@ button {
 @media (max-width: 480px) {
   .brand-credit { font-size: 11.5px; gap: 6px; padding: 6px 8px; }
 }
+
+/* ============================================================
+   火车站地图：站牌 + 小火车
+   ============================================================ */
+.screen-map.is-active { display: flex; flex-direction: column; }
+
+.station-scene {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 78px - 42px);
+  min-height: 430px;
+}
+
+.station-viewport {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.station-viewport::-webkit-scrollbar { display: none; }
+
+.station-track {
+  position: relative;
+  height: 100%;
+  min-width: 100%;
+  width: max-content;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(40px, 6vw, 90px);
+  padding: 0 46vw 0 max(24px, 8vw);
+}
+
+/* ---------- 夜空与山野 ---------- */
+.station-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.station-sky::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 0;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow:
+    6vw 4vh 0 0 rgba(244,236,216,.9), 14vw 12vh 0 0 rgba(244,236,216,.5),
+    22vw 2vh 0 0 rgba(244,236,216,.8), 31vw 9vh 0 0 rgba(244,236,216,.4),
+    40vw 5vh 0 0 rgba(244,236,216,.9), 48vw 14vh 0 0 rgba(244,236,216,.5),
+    57vw 3vh 0 0 rgba(244,236,216,.7), 66vw 11vh 0 0 rgba(244,236,216,.4),
+    75vw 6vh 0 0 rgba(244,236,216,.9), 84vw 13vh 0 0 rgba(244,236,216,.5),
+    92vw 4vh 0 0 rgba(244,236,216,.8), 10vw 20vh 0 0 rgba(244,236,216,.35),
+    28vw 22vh 0 0 rgba(244,236,216,.4), 52vw 21vh 0 0 rgba(244,236,216,.35),
+    70vw 20vh 0 0 rgba(244,236,216,.4), 88vw 22vh 0 0 rgba(244,236,216,.35);
+  animation: star-twinkle 3.6s ease-in-out infinite alternate;
+}
+@keyframes star-twinkle {
+  from { opacity: .55; }
+  to   { opacity: 1; }
+}
+.station-moon {
+  position: absolute;
+  top: 7%;
+  right: 6%;
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #F8F1DE, #E4D5A8 68%, #CBB877);
+  box-shadow: 0 0 34px 8px rgba(244,236,216,.18);
+  pointer-events: none;
+}
+.station-hills {
+  position: absolute;
+  left: 0; right: 0; bottom: 46px;
+  height: 130px;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 130% at 18% 130%, var(--ink-2) 46%, transparent 47%),
+    radial-gradient(150% 150% at 62% 135%, var(--ink-3) 44%, transparent 45%),
+    radial-gradient(110% 120% at 95% 132%, var(--ink-2) 46%, transparent 47%);
+  opacity: .9;
+}
+
+/* ---------- 铁轨 ---------- */
+.rail-wrap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 64px;
+  pointer-events: none;
+}
+.rail-sleepers {
+  position: absolute;
+  left: 0; right: 0; bottom: 8px;
+  height: 16px;
+  background: repeating-linear-gradient(90deg,
+    var(--shadow-hard) 0 26px, transparent 26px 58px);
+  opacity: .85;
+}
+.rail {
+  position: absolute;
+  left: 0; right: 0;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #6B6257, #3A342C);
+}
+.rail-a { bottom: 34px; }
+.rail-b { bottom: 20px; opacity: .75; }
+
+/* ---------- 站牌 ---------- */
+.station {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  width: 176px;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: none;
+  padding-bottom: 44px;
+  transition: transform .3s ease;
+}
+.station.is-high { padding-bottom: 108px; }
+.station:hover { transform: translateY(-6px); }
+
+.sign {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 14px 12px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  border: var(--border-w) solid var(--shadow-hard);
+  border-radius: 14px;
+  box-shadow: 4px 5px 0 var(--shadow-hard);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+/* 顶部挂耳 */
+.sign::before, .sign::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2.5px solid var(--shadow-hard);
+}
+.sign::before { left: 16px; }
+.sign::after { right: 16px; }
+
+.sign-plate {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 34px;
+  height: 26px;
+  padding: 0 8px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  font-size: 14px;
+  border: 2.5px solid var(--gold);
+  border-radius: var(--radius-pill);
+}
+.sign-name {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  margin-top: 6px;
+}
+.sign-desc {
+  font-size: 11.5px;
+  color: #6B6152;
+  line-height: 1.5;
+  text-align: center;
+  min-height: 34px;
+}
+.sign-stars { font-size: 13px; letter-spacing: 3px; color: var(--gold-deep); }
+.sign-stars .dim { color: #C9BC9C; }
+
+.sign-post {
+  width: 14px;
+  height: 40px;
+  background: linear-gradient(90deg, #5A4632, #3E3226);
+  border: 2.5px solid var(--shadow-hard);
+  border-top: none;
+}
+
+/* 当前选中站 */
+.station.is-current .sign {
+  transform: rotate(-1.2deg);
+  box-shadow: 5px 7px 0 var(--shadow-hard), 0 0 0 3px var(--gold), 0 0 26px rgba(224,169,62,.45);
+  animation: sign-bounce .55s ease;
+}
+@keyframes sign-bounce {
+  0% { transform: rotate(-1.2deg) translateY(0); }
+  35% { transform: rotate(-1.2deg) translateY(-12px); }
+  70% { transform: rotate(-1.2deg) translateY(3px); }
+  100% { transform: rotate(-1.2deg) translateY(0); }
+}
+.station.is-current .sign-plate { background: var(--gold); color: var(--ink); }
+
+/* 已通关站牌角标 */
+.station.is-cleared .sign-name { color: var(--ink); }
+.station.is-cleared .sign { background: linear-gradient(180deg, #F8F1DE, #EFE3C4); }
+
+/* ---------- 小火车 ---------- */
+.train {
+  position: absolute;
+  z-index: 3;
+  bottom: 38px;
+  left: 10px;
+  width: 190px;
+  transition: left 1.5s cubic-bezier(.45,-0.18,.3,1.12);
+  pointer-events: none;
+}
+.train-svg { width: 100%; display: block; overflow: visible; }
+.t-ink { fill: var(--charcoal); }
+.t-ink2 { fill: var(--ink-2); }
+.t-gold { fill: var(--gold); }
+.t-gold-deep { fill: var(--gold-deep); }
+.t-paper { fill: var(--paper); }
+.t-wheel { fill: var(--charcoal); stroke: var(--gold-deep); stroke-width: 3; }
+
+.train.is-moving .train-svg {
+  animation: train-bob .32s ease-in-out infinite alternate;
+}
+@keyframes train-bob {
+  from { transform: translateY(0) rotate(-.4deg); }
+  to   { transform: translateY(-2.5px) rotate(.4deg); }
+}
+.train.is-moving .train-wheels {
+  transform-origin: center;
+  animation: wheel-spin .5s linear infinite;
+}
+@keyframes wheel-spin {
+  from { transform: rotate(0); }
+  to   { transform: rotate(360deg); }
+}
+
+/* 蒸汽 */
+.train-smoke {
+  position: absolute;
+  left: 0; top: -6px;
+  width: 40px; height: 30px;
+  pointer-events: none;
+}
+.smoke-puff {
+  position: absolute;
+  bottom: 0;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(244,236,216,.75);
+  animation: smoke-rise linear forwards;
+}
+@keyframes smoke-rise {
+  0%   { transform: translate(0,0) scale(.5); opacity: .85; }
+  100% { transform: translate(-16px,-64px) scale(2.1); opacity: 0; }
+}
+
+/* ---------- 站台信息板 ---------- */
+.station-panel {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 14px 12px;
+  padding: 12px 18px;
+  background: color-mix(in srgb, var(--ink-2) 88%, transparent);
+  border: var(--border-w) solid var(--shadow-hard);
+  border-radius: 18px;
+  box-shadow: 4px 5px 0 var(--shadow-hard);
+  backdrop-filter: blur(3px);
+}
+.station-panel-info { min-width: 0; }
+.sp-num {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: .1em;
+  color: var(--ink);
+  background: var(--gold);
+  border-radius: var(--radius-pill);
+  padding: 2px 12px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.sp-name { font-size: 22px; letter-spacing: .05em; line-height: 1.3; }
+.sp-desc { font-size: 13px; color: var(--paper-dim); margin-top: 2px; }
+.sp-stars { font-size: 14px; letter-spacing: 3px; color: var(--gold); margin-top: 3px; }
+.sp-stars .dim { color: color-mix(in srgb, var(--paper-dim) 55%, transparent); }
+
+@media (max-width: 560px) {
+  .station { width: 148px; height: 300px; }
+  .station.is-high { padding-bottom: 92px; }
+  .sign-name { font-size: 17px; }
+  .station-panel { padding: 10px 14px; gap: 10px; }
+  .sp-name { font-size: 19px; }
+  .sp-desc { display: none; }
+  .train { width: 150px; }
+  .station-scene { height: calc(100dvh - 70px - 42px); }
+}

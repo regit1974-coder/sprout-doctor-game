@@ -66,14 +66,14 @@
     parallaxEl.style.setProperty("--parallax-y", `${window.scrollY * 0.12}px`);
   }, { passive: true });
 
-  /* ---------- 地图渲染 ---------- */
-  const mapPath = $("#map-path");
-  const mapPathSvg = $("#map-path-svg");
-
-  function isUnlocked(index) {
-    if (index === 0) return true;
-    return !!save.cleared[WORLDS[index - 1].id];
-  }
+  /* ---------- 火车站地图：站牌 + 小火车 ---------- */
+  const track = $("#station-track");
+  const viewport = $("#station-viewport");
+  const train = $("#train");
+  const smokeBox = $("#train-smoke");
+  let stationEls = [];
+  let selectedIndex = 0;
+  let smokeTimer = null;
 
   function totalStars() {
     return Object.values(save.cleared).reduce((sum, c) => sum + (c.stars || 0), 0);
@@ -82,86 +82,143 @@
     return Object.values(save.cleared).reduce((sum, c) => sum + (c.score || 0), 0);
   }
 
-  function renderMap() {
+  function renderMap(parkAt) {
     $("#map-mode-title").textContent = MODE_LABEL[save.mode] || "闯关地图";
     $("#board-stars").textContent = totalStars();
     $("#board-score").textContent = totalScore();
 
-    mapPath.querySelectorAll(".level-node").forEach((n) => n.remove());
-    mapPathSvg.innerHTML = "";
+    track.querySelectorAll(".station").forEach((n) => n.remove());
+    stationEls = [];
 
     WORLDS.forEach((world, i) => {
       const cleared = save.cleared[world.id];
-      const unlocked = isUnlocked(i);
 
-      const node = document.createElement("button");
-      node.className = "level-node";
-      node.classList.add(unlocked ? "is-open" : "is-locked");
-      if (cleared) node.classList.add("is-cleared");
+      const st = document.createElement("button");
+      st.className = "station" + (cleared ? " is-cleared" : "") + (i % 2 ? " is-high" : "");
 
       const starsHtml = cleared
         ? "★".repeat(cleared.stars) + `<span class="dim">${"★".repeat(3 - cleared.stars)}</span>`
         : `<span class="dim">★★★</span>`;
 
-      node.innerHTML = `
-        <span class="node-badge">${cleared ? "✓" : i + 1}</span>
-        <span class="node-info">
-          <span class="node-name">${world.name}</span>
-          <span class="node-desc">${world.desc}</span>
-          <span class="node-stars">${starsHtml}</span>
+      st.innerHTML = `
+        <span class="sign">
+          <span class="sign-plate">${cleared ? "✓" : i + 1}</span>
+          <span class="sign-name">${world.name}</span>
+          <span class="sign-desc">${world.desc}</span>
+          <span class="sign-stars">${starsHtml}</span>
         </span>
-        ${unlocked ? "" : '<span class="node-lock">🔒</span>'}
+        <span class="sign-post" aria-hidden="true"></span>
       `;
-      if (unlocked) {
-        node.addEventListener("click", () => startLevel(i));
-      }
-      mapPath.appendChild(node);
+      st.addEventListener("click", () => selectStation(i, true));
+      track.appendChild(st);
+      stationEls.push(st);
     });
 
-    // 页脚
-    let footer = mapPath.parentElement.querySelector(".map-footer");
-    if (!footer) {
-      footer = document.createElement("p");
-      footer.className = "map-footer";
-      footer.innerHTML = `医学内容基于循证儿科实践 · 详见 <a href="https://www.yanyisheng.vip" target="_blank" rel="noopener">yanyisheng.vip</a> · 本游戏不能替代面诊`;
-      mapPath.parentElement.appendChild(footer);
-    }
-
-    requestAnimationFrame(drawPath);
+    // 小火车默认停在最前面未通关的站（全部通关则停终点站）；退出关卡时停在当前站
+    let park = typeof parkAt === "number" ? parkAt : WORLDS.findIndex((w) => !save.cleared[w.id]);
+    if (park === -1) park = WORLDS.length - 1;
+    requestAnimationFrame(() => selectStation(park, false));
   }
 
-  // 用节点中心绘制蜿蜒虚线路径
-  function drawPath() {
-    const nodes = [...mapPath.querySelectorAll(".level-node")];
-    if (nodes.length < 2) return;
-    const box = mapPath.getBoundingClientRect();
-    mapPathSvg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-    let d = "";
-    nodes.forEach((n, i) => {
-      const r = n.getBoundingClientRect();
-      const x = r.left - box.left + r.width / 2;
-      const y = r.top - box.top + r.height / 2;
-      d += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
-      // 是否已开放（前一关已通关）
-      const open = i === 0 || !!save.cleared[WORLDS[i - 1].id];
-      // 每段单独 path 以区分开放状态
-    });
-    // 分段绘制，区分开放/锁定状态
-    let html = "";
-    for (let i = 0; i < nodes.length - 1; i++) {
-      const a = centerOf(nodes[i]), b = centerOf(nodes[i + 1]);
-      const open = !!save.cleared[WORLDS[i].id];
-      html += `<path class="path-line ${open ? "is-open" : ""}" d="M ${a.x} ${a.y} L ${b.x} ${b.y}"/>`;
-    }
-    mapPathSvg.innerHTML = html;
-
-    function centerOf(n) {
-      const r = n.getBoundingClientRect();
-      return { x: r.left - box.left + r.width / 2, y: r.top - box.top + r.height / 2 };
-    }
+  function stationCenterX(i) {
+    const st = stationEls[i];
+    if (!st) return 0;
+    return st.offsetLeft + st.offsetWidth / 2;
   }
+
+  function selectStation(i, withWhistle) {
+    if (!stationEls.length) return;
+    selectedIndex = i;
+    stationEls.forEach((st, j) => st.classList.toggle("is-current", j === i));
+
+    const world = WORLDS[i];
+    const cleared = save.cleared[world.id];
+    $("#sp-num").textContent = `第 ${i + 1} 站 · 共 ${WORLDS.length} 站`;
+    $("#sp-name").textContent = world.name;
+    $("#sp-desc").textContent = world.desc;
+    $("#sp-stars").innerHTML = cleared
+      ? "最佳成绩 " + "★".repeat(cleared.stars) + `<span class="dim">${"★".repeat(3 - cleared.stars)}</span>`
+      : `<span class="dim">尚未通关 · 等你来挑战</span>`;
+
+    // 视口滚动到该站居中
+    const x = stationCenterX(i);
+    viewport.scrollTo({ left: x - viewport.clientWidth / 2, behavior: withWhistle ? "smooth" : "auto" });
+
+    // 小火车开过去
+    moveTrainTo(x, withWhistle);
+  }
+
+  function moveTrainTo(x, withSound) {
+    const half = train.offsetWidth / 2;
+    const dest = Math.max(10, x - half);
+    const from = parseFloat(train.style.left || "10");
+    const dist = Math.abs(dest - from);
+
+    train.style.left = dest + "px";
+
+    if (dist < 4) return; // 原地不动
+    clearInterval(smokeTimer);
+    if (withSound) whistle(dist);
+
+    train.classList.add("is-moving");
+    const puff = () => spawnSmoke();
+    puff();
+    smokeTimer = setInterval(puff, 160);
+    setTimeout(() => {
+      train.classList.remove("is-moving");
+      clearInterval(smokeTimer);
+      if (withSound) ding();
+    }, Math.min(2600, 500 + dist * 1.4));
+  }
+
+  function spawnSmoke() {
+    const puff = document.createElement("span");
+    puff.className = "smoke-puff";
+    puff.style.left = 14 + Math.random() * 8 + "px";
+    puff.style.animationDuration = 1.4 + Math.random() * 0.8 + "s";
+    smokeBox.appendChild(puff);
+    setTimeout(() => puff.remove(), 2300);
+  }
+
+  /* 小音效：汽笛 + 到站叮（WebAudio，无外部资源） */
+  let audioCtx = null;
+  function ac() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    }
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+  function tone(freqA, freqB, dur, type, vol) {
+    const ctx = ac();
+    if (!ctx) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freqA, ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(freqB, ctx.currentTime + dur);
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g).connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + dur + 0.05);
+  }
+  function whistle(dist) {
+    // 距离越远汽笛越长
+    const dur = Math.min(0.9, 0.25 + dist / 1600);
+    tone(311, 370, dur, "triangle", 0.035);
+    setTimeout(() => tone(370, 311, dur, "triangle", 0.028), dur * 1000 + 60);
+  }
+  function ding() {
+    tone(784, 784, 0.35, "sine", 0.05);
+    setTimeout(() => tone(1047, 1047, 0.5, "sine", 0.045), 140);
+  }
+
+  $("#btn-station-start").addEventListener("click", () => startLevel(selectedIndex));
   window.addEventListener("resize", () => {
-    if (screens.map.classList.contains("is-active")) drawPath();
+    if (!screens.map.classList.contains("is-active") || !stationEls.length) return;
+    const x = stationCenterX(selectedIndex);
+    viewport.scrollLeft = x - viewport.clientWidth / 2;
+    train.style.left = Math.max(10, x - train.offsetWidth / 2) + "px";
   });
 
   $("#btn-back-home").addEventListener("click", () => showScreen("home"));
@@ -182,7 +239,7 @@
     state.correctCount = 0;
 
     const world = WORLDS[index];
-    $("#quiz-world-tag").textContent = `第 ${index + 1} 关 · ${world.name}`;
+    $("#quiz-world-tag").textContent = `第 ${index + 1} 站 · ${world.name}`;
     renderHud();
     renderQuestion();
     showScreen("quiz");
@@ -298,7 +355,7 @@
 
   $("#btn-quit-level").addEventListener("click", () => {
     overlay.classList.remove("is-open");
-    renderMap();
+    renderMap(state.worldIndex);
     showScreen("map");
   });
 

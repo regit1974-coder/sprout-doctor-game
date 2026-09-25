@@ -78,10 +78,61 @@
         </div>
       </header>
 
-      <div class="map-scroll">
-        <div class="map-path" id="map-path">
-          <svg class="map-path-svg" id="map-path-svg" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <!-- 关卡节点由 JS 生成 -->
+      <div class="station-scene">
+        <div class="station-viewport" id="station-viewport">
+          <div class="station-track" id="station-track">
+            <div class="station-sky" aria-hidden="true"><span class="station-moon"></span></div>
+            <div class="station-hills" aria-hidden="true"></div>
+            <!-- 站牌由 JS 生成 -->
+            <div class="rail-wrap" aria-hidden="true">
+              <div class="rail-sleepers"></div>
+              <div class="rail rail-a"></div>
+              <div class="rail rail-b"></div>
+            </div>
+            <div class="train" id="train" aria-hidden="true">
+              <div class="train-smoke" id="train-smoke"></div>
+              <svg viewBox="0 0 190 96" class="train-svg">
+                <!-- 烟囱 -->
+                <rect x="16" y="14" width="14" height="20" rx="3" class="t-ink"/>
+                <rect x="13" y="10" width="20" height="7" rx="3.5" class="t-gold"/>
+                <!-- 锅炉 -->
+                <rect x="10" y="34" width="86" height="34" rx="15" class="t-ink2"/>
+                <circle cx="82" cy="51" r="9" class="t-paper"/>
+                <circle cx="82" cy="51" r="4.5" class="t-gold"/>
+                <!-- 车头前脸 -->
+                <path d="M10 42 L2 50 L2 66 L10 68 Z" class="t-gold"/>
+                <!-- 驾驶室 -->
+                <rect x="98" y="22" width="52" height="46" rx="6" class="t-ink"/>
+                <rect x="106" y="30" width="26" height="18" rx="3" class="t-gold"/>
+                <path d="M118 22 L112 10 L124 10 Z" class="t-ink"/>
+                <!-- 车厢 -->
+                <rect x="154" y="36" width="32" height="32" rx="5" class="t-ink2"/>
+                <rect x="160" y="42" width="20" height="12" rx="2.5" class="t-paper"/>
+                <!-- 底盘 -->
+                <rect x="2" y="68" width="186" height="8" rx="4" class="t-gold-deep"/>
+                <!-- 车轮 -->
+                <g class="train-wheels">
+                  <circle cx="30" cy="80" r="11" class="t-wheel"/><circle cx="30" cy="80" r="4" class="t-gold"/>
+                  <circle cx="66" cy="80" r="11" class="t-wheel"/><circle cx="66" cy="80" r="4" class="t-gold"/>
+                  <circle cx="120" cy="80" r="11" class="t-wheel"/><circle cx="120" cy="80" r="4" class="t-gold"/>
+                  <circle cx="168" cy="80" r="9" class="t-wheel"/><circle cx="168" cy="80" r="3.5" class="t-gold"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="station-panel" id="station-panel">
+          <div class="station-panel-info">
+            <span class="sp-num" id="sp-num">第 1 站</span>
+            <h3 class="sp-name" id="sp-name">好好吃饭</h3>
+            <p class="sp-desc" id="sp-desc"></p>
+            <p class="sp-stars" id="sp-stars"></p>
+          </div>
+          <button class="push-btn push-btn--gold" id="btn-station-start">
+            <span class="push-btn-label">开始闯关</span>
+            <span class="push-btn-hint">呜—— 出发！</span>
+          </button>
         </div>
       </div>
     </section>
