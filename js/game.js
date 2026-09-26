@@ -256,6 +256,85 @@
   /* ---------- 答题流程 ---------- */
   const questionsOf = (world) => (save.mode === "kid" ? world.kid : world.parent);
 
+  /* ---------- 小树苗成长仪式 ---------- */
+  // 六个阶段：种子 → 嫩芽 → 幼苗 → 小树苗 → 小树 → 大树
+  const PLANT_STAGES = [
+    { label: "小种子睡着了", svg: `
+      <ellipse cx="50" cy="104" rx="30" ry="9" fill="#4A3B28"/>
+      <ellipse cx="50" cy="98" rx="12" ry="8" fill="#8A6B45"/>
+      <circle cx="50" cy="90" r="2.5" fill="#D8CDB2" opacity=".6"/>` },
+    { label: "冒出小嫩芽", svg: `
+      <ellipse cx="50" cy="104" rx="30" ry="9" fill="#4A3B28"/>
+      <path d="M50 100 L50 78" stroke="#8FB573" stroke-width="4" stroke-linecap="round"/>
+      <path d="M50 84 C40 82 35 74 35 68 C44 68 50 75 50 84 Z" fill="#8FB573"/>
+      <path d="M50 80 C60 78 65 70 65 64 C56 64 50 71 50 80 Z" fill="#A5C98A"/>` },
+    { label: "长成小幼苗", svg: `
+      <ellipse cx="50" cy="104" rx="30" ry="9" fill="#4A3B28"/>
+      <path d="M50 100 L50 62" stroke="#8FB573" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M50 78 C39 76 33 67 33 60 C43 60 50 68 50 78 Z" fill="#8FB573"/>
+      <path d="M50 72 C61 70 67 61 67 54 C57 54 50 62 50 72 Z" fill="#A5C98A"/>
+      <path d="M50 62 C44 56 43 48 46 42 C52 46 53 55 50 62 Z" fill="#8FB573"/>` },
+    { label: "小树苗长高了", svg: `
+      <ellipse cx="50" cy="104" rx="32" ry="9" fill="#4A3B28"/>
+      <path d="M50 100 L50 48" stroke="#7A6242" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="50" cy="38" r="17" fill="#8FB573"/>
+      <circle cx="37" cy="47" r="11" fill="#7FA868"/>
+      <circle cx="63" cy="47" r="11" fill="#A5C98A"/>
+      <path d="M50 100 C42 88 40 70 44 56" stroke="#7A6242" stroke-width="3" fill="none" stroke-linecap="round"/>` },
+    { label: "长成小树啦", svg: `
+      <ellipse cx="50" cy="104" rx="34" ry="9" fill="#4A3B28"/>
+      <path d="M50 100 L48 34" stroke="#7A6242" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="48" cy="26" r="22" fill="#8FB573"/>
+      <circle cx="30" cy="38" r="14" fill="#7FA868"/>
+      <circle cx="66" cy="38" r="14" fill="#A5C98A"/>
+      <circle cx="48" cy="16" r="12" fill="#A5C98A"/>
+      <path d="M48 70 C38 62 34 52 36 44" stroke="#7A6242" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M48 62 C58 56 62 48 61 40" stroke="#7A6242" stroke-width="4" fill="none" stroke-linecap="round"/>` },
+    { label: "大树结金果！", svg: `
+      <ellipse cx="50" cy="104" rx="36" ry="9" fill="#4A3B28"/>
+      <path d="M50 100 L48 26" stroke="#7A6242" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="48" cy="22" r="26" fill="#8FB573"/>
+      <circle cx="25" cy="38" r="16" fill="#7FA868"/>
+      <circle cx="71" cy="38" r="16" fill="#A5C98A"/>
+      <circle cx="38" cy="10" r="13" fill="#A5C98A"/>
+      <circle cx="60" cy="9" r="12" fill="#8FB573"/>
+      <circle cx="34" cy="30" r="4.5" fill="#E0A93E"/>
+      <circle cx="58" cy="24" r="4.5" fill="#E0A93E"/>
+      <circle cx="48" cy="42" r="4.5" fill="#E0A93E"/>
+      <path d="M48 72 C36 64 32 54 34 46" stroke="#7A6242" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M48 60 C60 54 64 46 63 38" stroke="#7A6242" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M20 14 l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5 Z" fill="#F4ECD8" opacity=".9"/>
+      <path d="M78 8 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 Z" fill="#F4ECD8" opacity=".7"/>` },
+  ];
+
+  function plantStageOf(correctCount) {
+    return Math.min(correctCount, PLANT_STAGES.length - 1);
+  }
+
+  function renderPlant(grew) {
+    const stage = PLANT_STAGES[plantStageOf(state.correctCount)];
+    const plantEl = $("#quiz-plant");
+    const prevStage = plantEl.dataset.stage;
+    plantEl.innerHTML = `<svg viewBox="0 0 100 114">${stage.svg}</svg>`;
+    plantEl.dataset.stage = plantStageOf(state.correctCount);
+    $("#plant-label").textContent = stage.label;
+
+    if (grew && prevStage !== plantEl.dataset.stage) {
+      plantEl.classList.remove("is-growing");
+      void plantEl.offsetWidth;
+      plantEl.classList.add("is-growing");
+      tone(523, 784, 0.16, "sine", 0.045);
+      setTimeout(() => tone(784, 1047, 0.2, "sine", 0.04), 110);
+    }
+  }
+
+  function shakePlant() {
+    const plantEl = $("#quiz-plant");
+    plantEl.classList.remove("is-shaking");
+    void plantEl.offsetWidth;
+    plantEl.classList.add("is-shaking");
+  }
+
   // 生命心随题量缩放：至少 3 颗，约每 3 题 1 颗
   const heartsFor = (total) => Math.max(HEARTS_MIN, Math.round(total / 3));
 
@@ -271,6 +350,7 @@
     const world = WORLDS[index];
     $("#quiz-world-tag").textContent = `第 ${index + 1} 站 · ${world.name}`;
     renderHud();
+    renderPlant(false);
     renderQuestion();
     showScreen("quiz");
   }
@@ -338,9 +418,11 @@
       const gained = 100 + (state.streak - 1) * 25;
       state.score += gained;
       burstConfetti(btn, 18);
+      renderPlant(true);
     } else {
       state.streak = 0;
       state.hearts -= 1;
+      shakePlant();
     }
 
     renderHud();
@@ -404,6 +486,8 @@
     };
     persist();
 
+    renderResultTree(false);
+
     // 星星逐个弹出
     const starsEl = $("#result-stars");
     starsEl.innerHTML = "";
@@ -429,11 +513,21 @@
   function levelFailed() {
     const world = WORLDS[state.worldIndex];
     $("#result-stars").innerHTML = "";
+    renderResultTree(true);
     $("#result-title").textContent = "小树苗需要再浇浇水";
     $("#result-summary").textContent = "生命心用完了，再来一次一定能通关！";
     $("#result-tip").textContent = "本关要点 · " + world.tip;
     $("#btn-next-level").style.display = "none";
     showScreen("result");
+  }
+
+  // 结算页大树：通关=金果大树，未通关=当前阶段的树苗（萎蔫）
+  function renderResultTree(wilt) {
+    const treeEl = $("#result-tree");
+    const stageIdx = wilt ? Math.max(plantStageOf(state.correctCount), 1) : PLANT_STAGES.length - 1;
+    const stage = PLANT_STAGES[stageIdx];
+    treeEl.className = "result-tree" + (wilt ? " is-wilt" : "");
+    treeEl.innerHTML = `<svg viewBox="0 0 100 114">${stage.svg}</svg>`;
   }
 
   $("#btn-replay").addEventListener("click", () => startLevel(state.worldIndex));

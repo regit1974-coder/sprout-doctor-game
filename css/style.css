@@ -957,3 +957,66 @@ button {
 @media (max-height: 660px) {
   .home-train-lane { display: none; }
 }
+
+/* ============================================================
+   小树苗成长仪式
+   ============================================================ */
+.quiz-garden {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0 2px;
+  pointer-events: none;
+}
+.quiz-plant { height: 86px; transform-origin: 50% 100%; }
+.quiz-plant svg { height: 100%; display: block; overflow: visible; }
+.quiz-plant.is-growing { animation: plant-grow .6s cubic-bezier(.34,1.56,.64,1); }
+@keyframes plant-grow {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18) translateY(-3px); }
+  100% { transform: scale(1); }
+}
+.quiz-plant.is-shaking { animation: plant-shake .5s ease; }
+@keyframes plant-shake {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-5deg); }
+  45% { transform: rotate(4deg); }
+  70% { transform: rotate(-2.5deg); }
+}
+.garden-ground {
+  width: 150px;
+  height: 9px;
+  margin-top: -4px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #5A4632, #3E3226);
+  border: 2px solid var(--shadow-hard);
+}
+.plant-label {
+  margin-top: 5px;
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: var(--paper-dim);
+}
+
+/* 结算页大树 */
+.result-tree {
+  height: 130px;
+  margin: -8px auto 4px;
+  display: flex;
+  justify-content: center;
+  transform-origin: 50% 100%;
+  animation: tree-pop .7s cubic-bezier(.34,1.56,.64,1) both;
+}
+.result-tree svg { height: 100%; display: block; overflow: visible; }
+@keyframes tree-pop {
+  from { transform: scale(.3); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.result-tree.is-wilt svg { filter: sepia(.55) saturate(.6) brightness(.82); }
+.result-tree.is-wilt { animation: none; opacity: .85; }
+
+@media (max-width: 560px) {
+  .quiz-plant { height: 64px; }
+  .result-tree { height: 100px; }
+}
