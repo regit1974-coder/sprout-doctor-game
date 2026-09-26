@@ -1020,3 +1020,82 @@ button {
   .quiz-plant { height: 64px; }
   .result-tree { height: 100px; }
 }
+
+/* ============================================================
+   小树苗果园
+   ============================================================ */
+.screen-orchard.is-active {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.pill-btn--gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+}
+.pill-btn--gold:hover { background: var(--paper); }
+.pill-sapling { width: 16px; height: 16px; flex: none; }
+
+.orchard-sub {
+  text-align: center;
+  font-size: 13.5px;
+  letter-spacing: .06em;
+  color: var(--paper-dim);
+  padding: 2px 16px 14px;
+}
+
+.orchard-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 14px;
+  padding: 4px 18px 56px;
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  align-content: start;
+}
+.orchard-cell {
+  position: relative;
+  padding: 16px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: color-mix(in srgb, var(--ink-2) 82%, transparent);
+  border: 2.5px solid color-mix(in srgb, var(--paper-dim) 40%, transparent);
+  border-radius: 18px;
+  transition: transform .25s ease, border-color .25s ease;
+}
+.orchard-cell.is-grown {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink-3) 88%, transparent), color-mix(in srgb, var(--ink-2) 88%, transparent));
+}
+.orchard-cell.is-grown:hover { transform: translateY(-4px); }
+.orchard-cell:not(.is-grown) .orchard-tree { opacity: .5; filter: saturate(.5); }
+
+.orchard-tree { height: 96px; }
+.orchard-tree svg { height: 100%; display: block; overflow: visible; }
+.orchard-cell.is-grown .orchard-tree { animation: tree-sway 3.4s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+@keyframes tree-sway {
+  from { transform: rotate(-1.4deg); }
+  to   { transform: rotate(1.4deg); }
+}
+.orchard-name {
+  margin-top: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+.orchard-cell:not(.is-grown) .orchard-name { color: color-mix(in srgb, var(--paper-dim) 70%, transparent); }
+.orchard-fruits { font-size: 13px; letter-spacing: 5px; color: var(--gold); margin-top: 2px; }
+.orchard-fruits .dim { color: color-mix(in srgb, var(--paper-dim) 35%, transparent); }
+
+@media (max-width: 560px) {
+  .orchard-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; padding: 4px 12px 50px; }
+  .orchard-tree { height: 76px; }
+  .orchard-name { font-size: 12.5px; }
+}

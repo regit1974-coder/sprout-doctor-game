@@ -104,6 +104,10 @@
         <div class="score-board">
           <div class="score-item"><span class="score-label">总星星</span><span class="score-value" id="board-stars">0</span></div>
           <div class="score-item"><span class="score-label">总分</span><span class="score-value" id="board-score">0</span></div>
+          <button class="pill-btn pill-btn--gold" id="btn-orchard">
+            <svg viewBox="0 0 48 48" class="pill-sapling" aria-hidden="true"><path d="M24 42 L24 24" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M24 31 C17 29 13 22 13 16 C20 16 25 22 24 31 Z" fill="currentColor" opacity=".85"/><path d="M24 26 C31 24 35 17 35 11 C28 11 23 17 24 26 Z" fill="currentColor"/></svg>
+            果园
+          </button>
         </div>
       </header>
 
@@ -164,6 +168,21 @@
           </button>
         </div>
       </div>
+    </section>
+
+    <!-- ============ 小树苗果园 ============ -->
+    <section class="screen screen-orchard" id="screen-orchard">
+      <header class="map-header">
+        <button class="pill-btn" id="btn-back-map">← 地图</button>
+        <div class="map-title-wrap">
+          <h2 class="map-title outline-word">小树苗果园</h2>
+        </div>
+        <div class="score-board">
+          <div class="score-item"><span class="score-label">总星星</span><span class="score-value" id="orchard-stars">0</span></div>
+        </div>
+      </header>
+      <p class="orchard-sub" id="orchard-sub">每通关一站，果园里就多一棵大树，星星越多金果越多</p>
+      <div class="orchard-grid" id="orchard-grid"></div>
     </section>
 
     <!-- ============ 答题 ============ -->

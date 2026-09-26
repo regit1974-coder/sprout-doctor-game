@@ -27,6 +27,7 @@
   const screens = {
     home: $("#screen-home"),
     map: $("#screen-map"),
+    orchard: $("#screen-orchard"),
     quiz: $("#screen-quiz"),
     result: $("#screen-result"),
   };
@@ -244,6 +245,52 @@
   }
 
   $("#btn-station-start").addEventListener("click", () => startLevel(selectedIndex));
+
+  /* ---------- 小树苗果园 ---------- */
+  function renderOrchard() {
+    $("#orchard-stars").textContent = totalStars();
+    const grid = $("#orchard-grid");
+    grid.innerHTML = "";
+
+    let clearedCount = 0;
+    WORLDS.forEach((world, i) => {
+      const cleared = save.cleared[world.id];
+      if (cleared) clearedCount += 1;
+
+      const cell = document.createElement("div");
+      cell.className = "orchard-cell" + (cleared ? " is-grown" : "");
+
+      const treeSvg = cleared
+        ? PLANT_STAGES[PLANT_STAGES.length - 1].svg
+        : PLANT_STAGES[0].svg;
+      const fruits = cleared
+        ? "●".repeat(cleared.stars) + `<span class="dim">${"●".repeat(3 - cleared.stars)}</span>`
+        : `<span class="dim">●●●</span>`;
+
+      cell.innerHTML = `
+        <div class="orchard-tree"><svg viewBox="0 0 100 114">${treeSvg}</svg></div>
+        <p class="orchard-name">${world.name}</p>
+        <p class="orchard-fruits">${fruits}</p>
+      `;
+      grid.appendChild(cell);
+    });
+
+    $("#orchard-sub").textContent = clearedCount === WORLDS.length
+      ? "满园大树！十五站全部通关，了不起的小医生！"
+      : `已种下 ${clearedCount} / ${WORLDS.length} 棵大树 · 每通关一站，果园里就多一棵大树`;
+
+    if (clearedCount === WORLDS.length) bigConfetti();
+  }
+
+  $("#btn-orchard").addEventListener("click", () => {
+    renderOrchard();
+    showScreen("orchard");
+  });
+  $("#btn-back-map").addEventListener("click", () => {
+    stopConfetti();
+    renderMap();
+    showScreen("map");
+  });
   window.addEventListener("resize", () => {
     if (!screens.map.classList.contains("is-active") || !stationEls.length) return;
     const x = stationCenterX(selectedIndex);
