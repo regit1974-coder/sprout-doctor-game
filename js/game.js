@@ -66,6 +66,36 @@
     parallaxEl.style.setProperty("--parallax-y", `${window.scrollY * 0.12}px`);
   }, { passive: true });
 
+  /* ---------- 首页知识列车：开场巡行 ---------- */
+  const homeTrain = $("#home-train");
+  const homeSmoke = $("#home-smoke");
+  let homeSmokeTimer = null;
+
+  function runHomeTrain() {
+    if (!homeTrain) return;
+    clearInterval(homeSmokeTimer);
+    homeTrain.classList.remove("is-running");
+    void homeTrain.offsetWidth;
+    homeTrain.classList.add("is-running");
+    whistle(900);
+    const puff = () => {
+      const p = document.createElement("span");
+      p.className = "smoke-puff";
+      p.style.left = 4 + Math.random() * 6 + "px";
+      p.style.animationDuration = 1.2 + Math.random() * 0.7 + "s";
+      homeSmoke.appendChild(p);
+      setTimeout(() => p.remove(), 2100);
+    };
+    puff();
+    homeSmokeTimer = setInterval(puff, 150);
+    setTimeout(() => { clearInterval(homeSmokeTimer); ding(); }, 4600);
+  }
+  // 首次进入 + 每隔约 40 秒再巡行一次
+  setTimeout(runHomeTrain, 900);
+  setInterval(() => {
+    if (screens.home.classList.contains("is-active")) runHomeTrain();
+  }, 40000);
+
   /* ---------- 火车站地图：站牌 + 小火车 ---------- */
   const track = $("#station-track");
   const viewport = $("#station-viewport");

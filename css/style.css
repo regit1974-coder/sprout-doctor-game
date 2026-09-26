@@ -78,7 +78,7 @@ button {
   display: none;
   overflow: hidden;
 }
-.screen-home.is-active { display: flex; flex-direction: column; }
+.screen-home.is-active { display: flex; flex-direction: column; padding-bottom: 92px; }
 
 .hero-parallax {
   position: absolute;
@@ -853,4 +853,107 @@ button {
   .sp-desc { display: none; }
   .train { width: 150px; }
   .station-scene { height: calc(100dvh - 70px - 42px); }
+}
+
+/* ============================================================
+   首页知识列车：开场巡行
+   ============================================================ */
+.home-train-lane {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 40px;
+  height: 84px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.home-rail {
+  position: absolute;
+  left: 0; right: 0; bottom: 10px;
+  height: 4px;
+  background: linear-gradient(180deg, #6B6257, #3A342C);
+}
+.home-train {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  transform: translateX(-340px);
+}
+.home-train.is-running {
+  animation: home-train-run 5.2s linear forwards;
+}
+@keyframes home-train-run {
+  from { transform: translateX(-340px); }
+  to   { transform: translateX(calc(100vw + 60px)); }
+}
+.home-train.is-running .home-engine {
+  animation: train-bob .32s ease-in-out infinite alternate;
+}
+.home-engine { width: 106px; flex: none; overflow: visible; }
+
+.home-car {
+  position: relative;
+  flex: none;
+  min-width: 92px;
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  border: 2.5px solid var(--shadow-hard);
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 var(--shadow-hard);
+  margin-bottom: 8px;
+}
+.home-car::before {
+  /* 车厢挂钩 */
+  content: "";
+  position: absolute;
+  left: -7px;
+  bottom: 10px;
+  width: 7px;
+  height: 3.5px;
+  background: var(--gold-deep);
+}
+.home-car::after {
+  /* 车轮 */
+  content: "";
+  position: absolute;
+  left: 14px; right: 14px;
+  bottom: -8px;
+  height: 9px;
+  background:
+    radial-gradient(circle at 8px 4.5px, var(--charcoal) 4px, transparent 4.5px),
+    radial-gradient(circle at calc(100% - 8px) 4.5px, var(--charcoal) 4px, transparent 4.5px);
+}
+.home-car--sprout { color: var(--ink); }
+.car-sapling { width: 17px; height: 17px; color: var(--ink-3); flex: none; }
+.home-car--gold { background: var(--gold); }
+
+.home-smoke {
+  position: absolute;
+  left: 8px; top: -4px;
+  width: 30px; height: 22px;
+}
+.home-smoke .smoke-puff { width: 11px; height: 11px; }
+
+@media (max-width: 560px) {
+  .home-train-lane { bottom: 30px; height: 70px; }
+  .home-engine { width: 84px; }
+  .home-car { min-width: 76px; height: 30px; font-size: 12px; padding: 0 10px; }
+  .home-train { gap: 5px; }
+}
+
+/* 矮屏保护：高度不足时收起列车车道，避免与操作按钮重叠 */
+@media (max-height: 660px) {
+  .home-train-lane { display: none; }
 }
