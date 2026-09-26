@@ -779,13 +779,26 @@ button {
 .train.is-moving .train-svg {
   animation: train-bob .32s ease-in-out infinite alternate;
 }
+.train.is-reversed .train-svg { transform: scaleX(-1); }
+.train.is-moving.is-reversed .train-svg { animation: train-bob-rev .32s ease-in-out infinite alternate; }
+@keyframes train-bob-rev {
+  from { transform: scaleX(-1) translateY(0) rotate(.4deg); }
+  to   { transform: scaleX(-1) translateY(-2.5px) rotate(-.4deg); }
+}
+.train.is-reversed .train-smoke { left: auto; right: 12px; }
+.train.is-reversed .smoke-puff { animation-name: smoke-rise-rev; }
+@keyframes smoke-rise-rev {
+  0%   { transform: translate(0,0) scale(.5); opacity: .85; }
+  100% { transform: translate(-16px,-64px) scale(2.1); opacity: 0; }
+}
 @keyframes train-bob {
   from { transform: translateY(0) rotate(-.4deg); }
   to   { transform: translateY(-2.5px) rotate(.4deg); }
 }
-.train.is-moving .train-wheels {
+.train.is-moving .train-wheels circle {
+  transform-box: fill-box;
   transform-origin: center;
-  animation: wheel-spin .5s linear infinite;
+  animation: wheel-spin .5s linear infinite reverse;
 }
 @keyframes wheel-spin {
   from { transform: rotate(0); }
@@ -809,7 +822,7 @@ button {
 }
 @keyframes smoke-rise {
   0%   { transform: translate(0,0) scale(.5); opacity: .85; }
-  100% { transform: translate(-16px,-64px) scale(2.1); opacity: 0; }
+  100% { transform: translate(16px,-64px) scale(2.1); opacity: 0; }
 }
 
 /* ---------- 站台信息板 ---------- */
@@ -889,8 +902,15 @@ button {
   from { transform: translateX(-340px); }
   to   { transform: translateX(calc(100vw + 60px)); }
 }
+/* 首页车头朝右行驶：发动机镜像朝右 */
+.home-engine { transform: scaleX(-1); }
 .home-train.is-running .home-engine {
-  animation: train-bob .32s ease-in-out infinite alternate;
+  animation: train-bob-rev .32s ease-in-out infinite alternate;
+}
+.home-train.is-running .home-engine circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wheel-spin .5s linear infinite reverse;
 }
 .home-engine { width: 106px; flex: none; overflow: visible; }
 
@@ -915,10 +935,10 @@ button {
   margin-bottom: 8px;
 }
 .home-car::before {
-  /* 车厢挂钩 */
+  /* 车厢挂钩（挂在行进方向前侧） */
   content: "";
   position: absolute;
-  left: -7px;
+  right: -7px;
   bottom: 10px;
   width: 7px;
   height: 3.5px;
@@ -941,9 +961,10 @@ button {
 
 .home-smoke {
   position: absolute;
-  left: 8px; top: -4px;
+  right: 8px; top: -4px;
   width: 30px; height: 22px;
 }
+.home-smoke .smoke-puff { animation-name: smoke-rise-rev; }
 .home-smoke .smoke-puff { width: 11px; height: 11px; }
 
 @media (max-width: 560px) {

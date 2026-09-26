@@ -186,6 +186,8 @@
     const dist = Math.abs(dest - from);
 
     train.style.left = dest + "px";
+    // 原车头朝左：向右行驶时镜像掉头（车头朝右），始终车头在前
+    train.classList.toggle("is-reversed", dest > from);
 
     if (dist < 4) return; // 原地不动
     clearInterval(smokeTimer);
